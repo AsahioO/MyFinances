@@ -1,5 +1,6 @@
 package com.finanzas.app.di
 
+import com.finanzas.app.data.local.AppDatabase
 import com.finanzas.app.data.local.dao.BancoConfigDao
 import com.finanzas.app.data.local.dao.CategoriaDao
 import com.finanzas.app.data.local.dao.MovimientoDao
@@ -22,10 +23,12 @@ object RepositoryModule {
         categoriaDao: CategoriaDao,
         notificacionProcesadaDao: NotificacionProcesadaDao,
         bancoConfigDao: BancoConfigDao,
+        db: AppDatabase,
     ): MovimientoRepository = MovimientoRepository(
         movimientoDao = movimientoDao,
         categoriaDao = categoriaDao,
         notificacionProcesadaDao = notificacionProcesadaDao,
         bancoConfigDao = bancoConfigDao,
+        db = db,
     )
 }
