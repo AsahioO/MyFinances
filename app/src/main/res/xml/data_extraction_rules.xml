@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  La base de datos contiene historial financiero real. Se excluye TODO de
+  cualquier extraccion automatica: respaldo en la nube y transferencia
+  dispositivo a dispositivo. El respaldo, si algun dia se quiere, sera
+  explicito y local (exportar a archivo), nunca implicito del sistema.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Espejo XML del token de fondo de ui/theme/Color.kt. Solo lo usa el tema de
+  arranque (themes.xml); la paleta real de la app vive en Compose.
+-->
+<resources>
+    <color name="surface">#FFFBF6EF</color>
+</resources>

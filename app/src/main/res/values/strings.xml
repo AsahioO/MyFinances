@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Finanzas</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_movimientos">Movimientos</string>
+    <string name="nav_reportes">Reportes</string>
+    <string name="nav_ajustes">Ajustes</string>
+</resources>
