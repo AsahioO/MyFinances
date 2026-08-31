@@ -5,6 +5,8 @@ import com.finanzas.app.data.local.dao.GastoPorCategoria
 import com.finanzas.app.data.local.dao.MovimientoDao
 import com.finanzas.app.data.local.dao.MovimientoPorCuenta
 import com.finanzas.app.data.local.entity.MovimientoEntity
+import com.finanzas.app.data.local.entity.OrigenMovimiento
+import com.finanzas.app.data.local.entity.TipoMovimiento
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -27,4 +29,19 @@ class ReportesRepository(
 
     fun observarEnRangoLimit(desde: Long, hasta: Long, limit: Int): Flow<List<MovimientoEntity>> =
         movimientoDao.observarEnRangoLimit(desde, hasta, limit)
+
+    /**
+     * Listado LIMIT/OFFSET del historial con filtros, para MovimientosScreen.
+     * El filtrado y el limite viven en SQL (ver MovimientoDao).
+     */
+    fun observarMovimientosFiltrados(
+        desde: Long?,
+        hasta: Long?,
+        tipo: TipoMovimiento?,
+        origen: OrigenMovimiento?,
+        soloPendientes: Boolean,
+        limite: Int,
+        offset: Int,
+    ): Flow<List<MovimientoEntity>> =
+        movimientoDao.observarMovimientosFiltrados(desde, hasta, tipo, origen, soloPendientes, limite, offset)
 }

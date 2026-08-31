@@ -15,4 +15,8 @@ class CuentaRepository(
 
     suspend fun obtenerPorOrigen(origen: OrigenMovimiento): CuentaEntity? =
         cuentaDao.obtenerPorOrigen(origen)
+
+    suspend fun insertarCuenta(cuenta: CuentaEntity): Long = cuentaDao.insertar(cuenta)
+
+    suspend fun actualizarCuenta(cuenta: CuentaEntity) = cuentaDao.actualizar(cuenta)
 }

@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.finanzas.app.data.local.entity.EstadoMovimiento
 import com.finanzas.app.data.local.entity.MovimientoEntity
+import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
 import kotlinx.coroutines.flow.Flow
 
@@ -71,6 +72,33 @@ interface MovimientoDao {
 
     @Query("SELECT * FROM movimiento ORDER BY fechaMovimiento DESC, id DESC LIMIT :limit")
     fun observarRecientes(limit: Int): Flow<List<MovimientoEntity>>
+
+    /**
+     * Pagina el historial con filtros opcionales. Los `:param IS NULL` hacen
+     * que un filtro nulo no restrinja; el filtrado vive en SQL (plan.md §7),
+     * nunca `take()`/`filter()` en memoria sobre la lista completa.
+     */
+    @Query(
+        """
+        SELECT * FROM movimiento
+        WHERE (:desde IS NULL OR fechaMovimiento >= :desde)
+          AND (:hasta IS NULL OR fechaMovimiento <= :hasta)
+          AND (:tipo IS NULL OR tipo = :tipo)
+          AND (:origen IS NULL OR origen = :origen)
+          AND (:soloPendientes = 0 OR estado = 'PENDIENTE_REVISION')
+        ORDER BY fechaMovimiento DESC, id DESC
+        LIMIT :limite OFFSET :offset
+        """,
+    )
+    fun observarMovimientosFiltrados(
+        desde: Long?,
+        hasta: Long?,
+        tipo: TipoMovimiento?,
+        origen: OrigenMovimiento?,
+        soloPendientes: Boolean,
+        limite: Int,
+        offset: Int,
+    ): Flow<List<MovimientoEntity>>
 
     @Query(
         """

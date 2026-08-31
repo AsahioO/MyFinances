@@ -46,6 +46,10 @@ class MovimientoRepository(
     suspend fun insertarMovimiento(movimiento: MovimientoEntity): Long =
         movimientoDao.insertar(movimiento)
 
+    /** Alta en lote (import CSV, recurrentes). Una sola transaccion: o entran todos o ninguno. */
+    suspend fun insertarMovimientos(movimientos: List<MovimientoEntity>): List<Long> =
+        db.withTransaction { movimientoDao.insertarTodos(movimientos) }
+
     suspend fun actualizarMovimiento(movimiento: MovimientoEntity) =
         movimientoDao.actualizar(movimiento)
 

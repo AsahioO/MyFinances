@@ -193,6 +193,57 @@ class MovimientoDaoTest {
         assertEquals(listOf(20_000L), enRango.map { it.montoCentavos })
     }
 
+    @Test
+    fun `movimientos filtrados pagina con tipo origen pendientes y rango`() = runTest {
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 1000L, tipo = TipoMovimiento.EGRESO)
+                .copy(origen = OrigenMovimiento.NU, estado = EstadoMovimiento.PENDIENTE_REVISION, fechaMovimiento = 100L),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 2000L, tipo = TipoMovimiento.INGRESO)
+                .copy(origen = OrigenMovimiento.MANUAL, estado = EstadoMovimiento.CONFIRMADO, fechaMovimiento = 300L),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 3000L, tipo = TipoMovimiento.EGRESO)
+                .copy(origen = OrigenMovimiento.MANUAL, estado = EstadoMovimiento.CONFIRMADO, fechaMovimiento = 200L),
+        )
+
+        // Pagina 1: los 2 mas recientes.
+        val pagina1 = dao.observarMovimientosFiltrados(
+            desde = null, hasta = null, tipo = null, origen = null,
+            soloPendientes = false, limite = 2, offset = 0,
+        ).first()
+        assertEquals(listOf(2000L, 3000L), pagina1.map { it.montoCentavos })
+
+        // Pagina 2: el restante.
+        val pagina2 = dao.observarMovimientosFiltrados(
+            desde = null, hasta = null, tipo = null, origen = null,
+            soloPendientes = false, limite = 2, offset = 2,
+        ).first()
+        assertEquals(listOf(1000L), pagina2.map { it.montoCentavos })
+
+        // Solo pendientes: solo el de Nu.
+        val pendientes = dao.observarMovimientosFiltrados(
+            desde = null, hasta = null, tipo = null, origen = null,
+            soloPendientes = true, limite = 10, offset = 0,
+        ).first()
+        assertEquals(listOf(1000L), pendientes.map { it.montoCentavos })
+
+        // Solo manuales: los dos que no son de Nu.
+        val manuales = dao.observarMovimientosFiltrados(
+            desde = null, hasta = null, tipo = null, origen = OrigenMovimiento.MANUAL,
+            soloPendientes = false, limite = 10, offset = 0,
+        ).first()
+        assertEquals(listOf(2000L, 3000L), manuales.map { it.montoCentavos })
+
+        // Solo egresos dentro del rango [0, 250].
+        val egresosEnRango = dao.observarMovimientosFiltrados(
+            desde = 0L, hasta = 250L, tipo = TipoMovimiento.EGRESO, origen = null,
+            soloPendientes = false, limite = 10, offset = 0,
+        ).first()
+        assertEquals(listOf(3000L, 1000L), egresosEnRango.map { it.montoCentavos })
+    }
+
     private fun movimientoDePrueba(montoCentavos: Long, tipo: TipoMovimiento) = MovimientoEntity(
         montoCentavos = montoCentavos,
         tipo = tipo,
