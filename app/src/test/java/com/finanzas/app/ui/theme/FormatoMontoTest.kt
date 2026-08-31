@@ -39,4 +39,10 @@ class FormatoMontoTest {
 
         assertEquals("$0.00", resultado.text)
     }
+
+    @Test
+    fun `formatearMontoPlano produce el mismo texto que la version anotada`() {
+        assertEquals("$23,580.59", formatearMontoPlano(2_358_059L, localeMx))
+        assertEquals("$0.00", formatearMontoPlano(0L, localeMx))
+    }
 }

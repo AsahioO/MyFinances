@@ -34,6 +34,20 @@ fun formatearMontoAnotado(
     }
 }
 
+/**
+ * Version de un solo estilo de [formatearMontoAnotado]: para VisualTransformation
+ * de un TextField, que solo acepta un string plano (no puede mezclar dos
+ * TextStyle en un mismo campo editable).
+ */
+fun formatearMontoPlano(centavos: Long, locale: Locale = Locale.forLanguageTag("es-MX")): String {
+    val signo = if (centavos < 0) "-" else ""
+    val absCentavos = abs(centavos)
+    val pesos = absCentavos / 100
+    val resto = absCentavos % 100
+    val formatoMiles = NumberFormat.getIntegerInstance(locale)
+    return "$signo\$${formatoMiles.format(pesos)}.${resto.toString().padStart(2, '0')}"
+}
+
 @Composable
 fun TextoMontoConCentavos(
     centavos: Long,
