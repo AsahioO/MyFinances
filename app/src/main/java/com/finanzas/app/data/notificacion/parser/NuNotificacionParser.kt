@@ -2,6 +2,7 @@ package com.finanzas.app.data.notificacion.parser
 
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
+import com.finanzas.app.domain.model.montoTextoACentavos
 import com.finanzas.app.domain.notificacion.NotificacionParseada
 import com.finanzas.app.domain.notificacion.ParserNotificacionBanco
 import com.finanzas.app.domain.notificacion.ResultadoParseoNotificacion
@@ -33,7 +34,7 @@ class NuNotificacionParser @Inject constructor() : ParserNotificacionBanco {
 
     private fun parsearIngreso(texto: String, cuando: Long): NotificacionParseada? {
         val match = REGEX_INGRESO.find(texto) ?: return null
-        val montoCentavos = montoACentavos(match.groupValues[1]) ?: return null
+        val montoCentavos = montoTextoACentavos(match.groupValues[1]) ?: return null
         return NotificacionParseada(
             montoCentavos = montoCentavos,
             tipo = TipoMovimiento.INGRESO,
@@ -45,22 +46,13 @@ class NuNotificacionParser @Inject constructor() : ParserNotificacionBanco {
     private fun parsearEgreso(texto: String, cuando: Long): NotificacionParseada? {
         val match = REGEX_EGRESO.find(texto) ?: return null
         val (comercio, montoTexto, fechaTexto) = match.destructured
-        val montoCentavos = montoACentavos(montoTexto) ?: return null
+        val montoCentavos = montoTextoACentavos(montoTexto) ?: return null
         return NotificacionParseada(
             montoCentavos = montoCentavos,
             tipo = TipoMovimiento.EGRESO,
             comercioOrigen = comercio.trim(),
             fechaMovimiento = parsearFecha(fechaTexto) ?: cuando,
         )
-    }
-
-    /** Nunca Double: separa pesos y centavos en el punto decimal. */
-    private fun montoACentavos(monto: String): Long? {
-        val partes = monto.replace(",", "").split(".")
-        if (partes.size != 2) return null
-        val pesos = partes[0].toLongOrNull() ?: return null
-        val centavos = partes[1].padEnd(2, '0').take(2).toLongOrNull() ?: return null
-        return pesos * 100 + centavos
     }
 
     private fun parsearFecha(fecha: String): Long? = try {
