@@ -19,11 +19,19 @@ import androidx.room.PrimaryKey
             // Borrar una categoria no borra historial financiero, solo lo descategoriza.
             onDelete = ForeignKey.SET_NULL,
         ),
+        ForeignKey(
+            entity = CuentaEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["cuentaId"],
+            // Borrar una cuenta no borra historial financiero, solo lo desasocia.
+            onDelete = ForeignKey.SET_NULL,
+        ),
     ],
     indices = [
         Index("fechaMovimiento"),
         Index("categoriaId"),
         Index("estado"),
+        Index("cuentaId"),
     ],
 )
 data class MovimientoEntity(
@@ -36,6 +44,7 @@ data class MovimientoEntity(
     /** Comercio o persona extraida del parseo de la notificacion. */
     val comercioOrigen: String? = null,
     val categoriaId: Long? = null,
+    val cuentaId: Long? = null,
     /** Fecha real del movimiento, epoch millis. */
     val fechaMovimiento: Long,
     /** Cuando se inserto la fila, epoch millis. Sirve para depurar duplicados y retrasos. */

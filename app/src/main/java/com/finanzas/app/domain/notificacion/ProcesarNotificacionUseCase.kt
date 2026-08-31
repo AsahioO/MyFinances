@@ -23,11 +23,13 @@ class ProcesarNotificacionUseCase @Inject constructor(
         if (resultado !is ResultadoParseoNotificacion.Exitoso) return
 
         val ahora = System.currentTimeMillis()
+        val cuenta = repositorio.obtenerCuentaPorOrigen(parser.origen)
         val movimiento = MovimientoEntity(
             montoCentavos = resultado.datos.montoCentavos,
             tipo = resultado.datos.tipo,
             origen = parser.origen,
             comercioOrigen = resultado.datos.comercioOrigen,
+            cuentaId = cuenta?.id,
             fechaMovimiento = resultado.datos.fechaMovimiento,
             fechaRegistro = ahora,
             estado = EstadoMovimiento.PENDIENTE_REVISION,

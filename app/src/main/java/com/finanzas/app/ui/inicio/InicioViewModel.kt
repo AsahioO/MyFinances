@@ -3,34 +3,62 @@ package com.finanzas.app.ui.inicio
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.domain.cuenta.ObtenerSaldosCuentasUseCase
+import com.finanzas.app.domain.cuenta.SaldoCuenta
+import com.finanzas.app.domain.reportes.FlujoMes
+import com.finanzas.app.domain.reportes.ObtenerFlujoDelMesUseCase
+import com.finanzas.app.ui.common.MovimientoUi
+import com.finanzas.app.ui.common.aUi
+import com.finanzas.app.ui.theme.ColoresSemanticos
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-/**
- * Por ahora solo expone el conteo de movimientos: es la prueba de punta a punta
- * de que la cadena Room -> Repositorio -> ViewModel -> Compose esta bien
- * conectada. El contenido real de Inicio (flujo del mes, ultimos movimientos)
- * se implementa despues.
- */
-@HiltViewModel
-class InicioViewModel @Inject constructor(
-    repositorio: MovimientoRepository,
-) : ViewModel() {
-
-    val estado: StateFlow<InicioUiState> = repositorio.observarConteoMovimientos()
-        .map { conteo -> InicioUiState(totalMovimientos = conteo, cargando = false) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = InicioUiState(),
-        )
-}
+private const val MAX_MOVIMIENTOS_RECIENTES = 5
 
 data class InicioUiState(
-    val totalMovimientos: Int = 0,
     val cargando: Boolean = true,
+    val flujoMes: FlujoMes = FlujoMes(),
+    val saldosCuentas: List<SaldoCuenta> = emptyList(),
+    val movimientosRecientes: List<MovimientoUi> = emptyList(),
+    val movimientosPendientes: Int = 0,
 )
+
+@HiltViewModel
+class InicioViewModel @Inject constructor(
+    private val repositorio: MovimientoRepository,
+    obtenerFlujoDelMes: ObtenerFlujoDelMesUseCase,
+    obtenerSaldosCuentas: ObtenerSaldosCuentasUseCase,
+) : ViewModel() {
+
+    // ColoresSemanticos no depende de composicion (data class con defaults):
+    // el ViewModel no es @Composable, asi que no puede leer LocalColoresSemanticos.
+    private val colores = ColoresSemanticos()
+
+    val estado: StateFlow<InicioUiState> = combine(
+        obtenerFlujoDelMes(),
+        obtenerSaldosCuentas(),
+        repositorio.observarMovimientos(),
+        repositorio.observarCategorias(),
+        repositorio.observarPendientesDeRevision().map { it.size },
+    ) { flujo, saldos, movimientos, categorias, pendientes ->
+        val categoriaPorId = categorias.associateBy { it.id }
+        InicioUiState(
+            cargando = false,
+            flujoMes = flujo,
+            saldosCuentas = saldos,
+            movimientosRecientes = movimientos.take(MAX_MOVIMIENTOS_RECIENTES).map {
+                it.aUi(it.categoriaId?.let(categoriaPorId::get), colores)
+            },
+            movimientosPendientes = pendientes,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = InicioUiState(),
+    )
+}

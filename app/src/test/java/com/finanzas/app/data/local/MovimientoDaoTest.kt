@@ -84,6 +84,92 @@ class MovimientoDaoTest {
         assertEquals("Nu", bancos.first().nombreDisplay)
     }
 
+    @Test
+    fun `observarGastoPorCategoria suma solo egresos del rango, agrupados por categoria`() = runTest {
+        val categoriaComida = db.categoriaDao().insertar(
+            com.finanzas.app.data.local.entity.CategoriaEntity(nombre = "Comida", icono = "Restaurant"),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 10_000L, tipo = TipoMovimiento.EGRESO)
+                .copy(categoriaId = categoriaComida, fechaMovimiento = 100L),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 5_000L, tipo = TipoMovimiento.EGRESO)
+                .copy(categoriaId = categoriaComida, fechaMovimiento = 200L),
+        )
+        // Ingreso: no debe sumar al gasto.
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 999_999L, tipo = TipoMovimiento.INGRESO)
+                .copy(categoriaId = categoriaComida, fechaMovimiento = 150L),
+        )
+        // Fuera de rango: no debe contarse.
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 1_000L, tipo = TipoMovimiento.EGRESO)
+                .copy(categoriaId = categoriaComida, fechaMovimiento = 9_000L),
+        )
+
+        val resultado = dao.observarGastoPorCategoria(desde = 0L, hasta = 1_000L).first()
+
+        assertEquals(1, resultado.size)
+        assertEquals(categoriaComida, resultado.first().categoriaId)
+        assertEquals(15_000L, resultado.first().totalCentavos)
+    }
+
+    @Test
+    fun `observarFlujoEnRango suma ingresos y egresos por separado`() = runTest {
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 70_000L, tipo = TipoMovimiento.INGRESO)
+                .copy(fechaMovimiento = 100L),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 21_900L, tipo = TipoMovimiento.EGRESO)
+                .copy(fechaMovimiento = 200L),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 5_000L, tipo = TipoMovimiento.EGRESO)
+                .copy(fechaMovimiento = 9_000L), // fuera de rango
+        )
+
+        val flujo = dao.observarFlujoEnRango(desde = 0L, hasta = 1_000L).first()
+
+        assertEquals(70_000L, flujo.totalIngresosCentavos)
+        assertEquals(21_900L, flujo.totalEgresosCentavos)
+    }
+
+    @Test
+    fun `observarFlujoEnRango devuelve ceros cuando no hay movimientos en el rango`() = runTest {
+        val flujo = dao.observarFlujoEnRango(desde = 0L, hasta = 1_000L).first()
+
+        assertEquals(0L, flujo.totalIngresosCentavos)
+        assertEquals(0L, flujo.totalEgresosCentavos)
+    }
+
+    @Test
+    fun `observarMovimientoPorCuenta agrupa ingresos y egresos por cuenta, sin limite de fecha`() = runTest {
+        val cuentaNu = db.cuentaDao().obtenerPorOrigen(OrigenMovimiento.NU)!!.id
+        val cuentaEfectivo = db.cuentaDao().obtenerPorOrigen(OrigenMovimiento.MANUAL)!!.id
+
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 70_000L, tipo = TipoMovimiento.INGRESO)
+                .copy(cuentaId = cuentaNu),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 21_900L, tipo = TipoMovimiento.EGRESO)
+                .copy(cuentaId = cuentaNu),
+        )
+        dao.insertar(
+            movimientoDePrueba(montoCentavos = 5_000L, tipo = TipoMovimiento.EGRESO)
+                .copy(cuentaId = cuentaEfectivo),
+        )
+
+        val porCuenta = dao.observarMovimientoPorCuenta().first().associateBy { it.cuentaId }
+
+        assertEquals(70_000L, porCuenta[cuentaNu]?.totalIngresosCentavos)
+        assertEquals(21_900L, porCuenta[cuentaNu]?.totalEgresosCentavos)
+        assertEquals(0L, porCuenta[cuentaEfectivo]?.totalIngresosCentavos)
+        assertEquals(5_000L, porCuenta[cuentaEfectivo]?.totalEgresosCentavos)
+    }
+
     private fun movimientoDePrueba(montoCentavos: Long, tipo: TipoMovimiento) = MovimientoEntity(
         montoCentavos = montoCentavos,
         tipo = tipo,

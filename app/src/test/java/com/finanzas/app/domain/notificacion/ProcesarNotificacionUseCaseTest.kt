@@ -43,6 +43,7 @@ class ProcesarNotificacionUseCaseTest {
             categoriaDao = db.categoriaDao(),
             notificacionProcesadaDao = db.notificacionProcesadaDao(),
             bancoConfigDao = db.bancoConfigDao(),
+            cuentaDao = db.cuentaDao(),
             db = db,
         )
         useCase = ProcesarNotificacionUseCase(listOf(NuNotificacionParser()), repositorio)
@@ -70,6 +71,9 @@ class ProcesarNotificacionUseCaseTest {
         assertEquals(EstadoMovimiento.PENDIENTE_REVISION, movimientos.first().estado)
         assertEquals(OrigenMovimiento.NU, movimientos.first().origen)
         assertTrue(db.notificacionProcesadaDao().yaProcesada("key-ingreso"))
+
+        val cuentaNu = db.cuentaDao().obtenerPorOrigen(OrigenMovimiento.NU)
+        assertEquals(cuentaNu?.id, movimientos.first().cuentaId)
     }
 
     @Test

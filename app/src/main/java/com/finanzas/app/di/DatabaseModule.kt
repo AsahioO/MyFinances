@@ -5,8 +5,10 @@ import androidx.room.Room
 import com.finanzas.app.data.local.AppDatabase
 import com.finanzas.app.data.local.dao.BancoConfigDao
 import com.finanzas.app.data.local.dao.CategoriaDao
+import com.finanzas.app.data.local.dao.CuentaDao
 import com.finanzas.app.data.local.dao.MovimientoDao
 import com.finanzas.app.data.local.dao.NotificacionProcesadaDao
+import com.finanzas.app.data.local.migration.MIGRATION_1_2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +31,7 @@ object DatabaseModule {
             .addCallback(AppDatabase.SEED_CALLBACK)
             // Sin fallbackToDestructiveMigration: la app acumula historial
             // financiero real, cada cambio de esquema lleva migracion escrita.
+            .addMigrations(MIGRATION_1_2)
             .build()
 
     @Provides
@@ -43,4 +46,7 @@ object DatabaseModule {
 
     @Provides
     fun proveerBancoConfigDao(db: AppDatabase): BancoConfigDao = db.bancoConfigDao()
+
+    @Provides
+    fun proveerCuentaDao(db: AppDatabase): CuentaDao = db.cuentaDao()
 }
