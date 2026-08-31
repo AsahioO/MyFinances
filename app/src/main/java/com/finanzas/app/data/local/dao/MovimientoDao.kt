@@ -17,6 +17,13 @@ data class GastoPorCategoria(
     val totalCentavos: Long,
 )
 
+/** Fila cruda (sin agregar) para reconstruir la serie cronologica de una categoria, p. ej. un sparkline. */
+data class MontoPorCategoriaFecha(
+    val categoriaId: Long?,
+    val montoCentavos: Long,
+    val fechaMovimiento: Long,
+)
+
 /** Ingresos y egresos totales de un rango de fechas. */
 data class FlujoPeriodo(
     val totalIngresosCentavos: Long,
@@ -114,6 +121,26 @@ interface MovimientoDao {
         hasta: Long,
         tipo: TipoMovimiento = TipoMovimiento.EGRESO,
     ): Flow<List<GastoPorCategoria>>
+
+    /**
+     * Filas crudas (sin GROUP BY) ordenadas por fecha, para armar en memoria la
+     * serie cronologica por categoria (sparkline de Top Movers). La agregacion
+     * de totales sigue viviendo en [observarGastoPorCategoria]; esta consulta
+     * solo existe porque una suma no alcanza para dibujar una tendencia.
+     */
+    @Query(
+        """
+        SELECT categoriaId, montoCentavos, fechaMovimiento
+        FROM movimiento
+        WHERE tipo = :tipo AND fechaMovimiento BETWEEN :desde AND :hasta
+        ORDER BY fechaMovimiento ASC
+        """,
+    )
+    fun observarMontosPorCategoriaEnRango(
+        desde: Long,
+        hasta: Long,
+        tipo: TipoMovimiento = TipoMovimiento.EGRESO,
+    ): Flow<List<MontoPorCategoriaFecha>>
 
     @Query(
         """

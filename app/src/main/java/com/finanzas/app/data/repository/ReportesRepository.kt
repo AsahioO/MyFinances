@@ -2,6 +2,7 @@ package com.finanzas.app.data.repository
 
 import com.finanzas.app.data.local.dao.FlujoPeriodo
 import com.finanzas.app.data.local.dao.GastoPorCategoria
+import com.finanzas.app.data.local.dao.MontoPorCategoriaFecha
 import com.finanzas.app.data.local.dao.MovimientoDao
 import com.finanzas.app.data.local.dao.MovimientoPorCuenta
 import com.finanzas.app.data.local.entity.MovimientoEntity
@@ -20,6 +21,9 @@ class ReportesRepository(
 
     fun observarGastoPorCategoria(desde: Long, hasta: Long): Flow<List<GastoPorCategoria>> =
         movimientoDao.observarGastoPorCategoria(desde, hasta)
+
+    fun observarMontosPorCategoriaEnRango(desde: Long, hasta: Long): Flow<List<MontoPorCategoriaFecha>> =
+        movimientoDao.observarMontosPorCategoriaEnRango(desde, hasta)
 
     fun observarFlujoEnRango(desde: Long, hasta: Long): Flow<FlujoPeriodo> =
         movimientoDao.observarFlujoEnRango(desde, hasta)

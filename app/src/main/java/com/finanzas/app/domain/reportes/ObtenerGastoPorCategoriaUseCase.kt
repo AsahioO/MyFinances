@@ -15,6 +15,8 @@ data class GastoCategoria(
     val montoCentavos: Long,
     /** 0f..1f, participacion sobre el total de gasto del periodo. */
     val proporcion: Float,
+    /** Montos individuales en orden cronologico dentro del periodo; base del sparkline de Top Movers. */
+    val montosOrdenados: List<Long> = emptyList(),
 )
 
 /**
@@ -29,15 +31,20 @@ class ObtenerGastoPorCategoriaUseCase @Inject constructor(
     operator fun invoke(rango: RangoFechas = rangoMesActual()): Flow<List<GastoCategoria>> =
         combine(
             reportes.observarGastoPorCategoria(rango.desde, rango.hasta),
+            reportes.observarMontosPorCategoriaEnRango(rango.desde, rango.hasta),
             movimientos.observarCategorias(),
-        ) { gastos, categorias ->
+        ) { gastos, montosCrudos, categorias ->
             val total = gastos.sumOf { it.totalCentavos }.coerceAtLeast(1L)
             val categoriaPorId = categorias.associateBy { it.id }
+            // montosCrudos ya llega ordenado por fecha (ASC) desde SQL: groupBy
+            // conserva ese orden dentro de cada sublista, sin re-ordenar en memoria.
+            val montosPorCategoria = montosCrudos.groupBy { it.categoriaId }
             gastos.map { gasto ->
                 GastoCategoria(
                     categoria = gasto.categoriaId?.let(categoriaPorId::get),
                     montoCentavos = gasto.totalCentavos,
                     proporcion = gasto.totalCentavos / total.toFloat(),
+                    montosOrdenados = montosPorCategoria[gasto.categoriaId]?.map { it.montoCentavos } ?: emptyList(),
                 )
             }
         }
