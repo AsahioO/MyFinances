@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -29,15 +30,6 @@ data class ReportesUiState(
     val transaccionesRecientes: List<MovimientoUi> = emptyList(),
 )
 
-/** Paleta ciclica para categorias sin color propio: reusa tokens ya definidos, no agrega nuevos. */
-private fun colorParaIndice(indice: Int, colores: ColoresSemanticos) = listOf(
-    colores.origenAutomatico,
-    colores.origenManual,
-    colores.ingreso,
-    colores.egreso,
-    colores.textoSecundario,
-)[indice % 5]
-
 @HiltViewModel
 class ReportesViewModel @Inject constructor(
     private val repositorio: MovimientoRepository,
@@ -47,6 +39,9 @@ class ReportesViewModel @Inject constructor(
 
     // ColoresSemanticos no depende de composicion: el ViewModel no es @Composable.
     private val colores = ColoresSemanticos()
+    // ponytail: rango fijo por instancia del VM; si la app cruza fin de mes
+    // con vida, se recalculara al recrear el VM (cambio de tab). Si eso
+    // molestara, inyectar Clock en vez de recalcular en cada emision.
     private val rango = rangoMesActual()
 
     val estado: StateFlow<ReportesUiState> = combine(
@@ -58,19 +53,19 @@ class ReportesViewModel @Inject constructor(
         ReportesUiState(
             cargando = false,
             totalGastadoCentavos = gastos.sumOf { it.montoCentavos },
-            segmentosDonut = gastos.mapIndexed { indice, gasto ->
+            segmentosDonut = gastos.map { gasto ->
                 SegmentoDonut(
-                    color = colorParaIndice(indice, colores),
+                    color = ReportesPaleta.colorPara(gasto.categoria?.id),
                     proporcion = gasto.proporcion,
                     etiqueta = gasto.categoria?.nombre ?: "Sin categoria",
                 )
             },
             topMovers = gastos.take(MAX_TOP_MOVERS),
-            transaccionesRecientes = movimientos.take(MAX_TRANSACCIONES_RECIENTES).map {
+            transaccionesRecientes = movimientos.map {
                 it.aUi(it.categoriaId?.let(categoriaPorId::get), colores)
             },
         )
-    }.stateIn(
+    }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = ReportesUiState(),

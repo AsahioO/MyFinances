@@ -64,15 +64,6 @@ interface MovimientoDao {
         SELECT * FROM movimiento
         WHERE fechaMovimiento BETWEEN :desde AND :hasta
         ORDER BY fechaMovimiento DESC, id DESC
-        """,
-    )
-    fun observarEnRango(desde: Long, hasta: Long): Flow<List<MovimientoEntity>>
-
-    @Query(
-        """
-        SELECT * FROM movimiento
-        WHERE fechaMovimiento BETWEEN :desde AND :hasta
-        ORDER BY fechaMovimiento DESC, id DESC
         LIMIT :limit
         """,
     )

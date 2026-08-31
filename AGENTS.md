@@ -19,10 +19,11 @@ Si el cache oculta fallos, añade `--rerun-tasks`.
 
 ## Arquitectura
 - `app/src/main/java/com/finanzas/app/{data,domain,ui,di}` — MVVM. `FinanzasApplication` + `MainActivity` + `FinanzasNavHost` son los entrypoints (`AndroidManifest.xml`).
-- `data/local` = Room (entidades/DAOs/`AppDatabase.kt`), `data/notificacion` = `FinanzasNotificationListenerService` + `parser/`, `data/repository/MovimientoRepository.kt:24` = único acceso a datos. ViewModels nunca tocan DAOs. El repo se construye en `di/RepositoryModule.kt` (no `@Inject constructor`).
+- `data/local` = Room (entidades/DAOs/`AppDatabase.kt`), `data/notificacion` = `FinanzasNotificationListenerService` + `parser/`, `data/repository/` = 3 repos por responsabilidad: `MovimientoRepository` (movimientos + categorías + dedup + bancos), `CuentaRepository` (wallets), `ReportesRepository` (agregados y listados LIMIT para UI). ViewModels nunca tocan DAOs. Los repos se construyen en `di/RepositoryModule.kt` (no `@Inject constructor`). Agregación siempre en SQL (`GROUP BY`), no en memoria; listados de UI con `LIMIT` en la query, nunca `take()` sobre la lista completa.
 - `domain/notificacion` = `ParserNotificacionBanco` + `ProcesarNotificacionUseCase` — toda la lógica de parseo vive aquí.
 - `di/`: `DatabaseModule` (Room + DAOs), `RepositoryModule` (repo), `NotificacionModule` (multibind `List<ParserNotificacionBanco>`). Banco nuevo = clase `ParserNotificacionBanco` + 1 línea en `NotificacionModule.proveerParsersBancarios`.
 - `ui/navigation`: rutas tipadas (`Rutas.kt`, `@Serializable` — respetar `app/proguard-rules.pro`), un grafo anidado por feature (`GrafosFeature.kt: grafoInicio()` etc.), `FinanzasNavHost` solo los conecta. `DestinoPrincipal` matchea por `hasRoute` sobre el grafo, no la pantalla hoja.
+- `ui/` organizada por feature: `ui/inicio/components/`, `ui/reportes/components/`, etc. Componentes genéricos (reusables por 2+ features) van en `ui/components/`. `domain/common` no existe: modelos de dominio en `domain/model/` (ej. `RangoFechas`, con clock inyectable por parámetro).
 
 ## Base de datos
 - `exportSchema=true` (`app/build.gradle.kts:58`), schemas en `app/schemas/` (v1 actual). **Nunca** `fallbackToDestructiveMigration()` — historial financiero real, cada cambio lleva `Migration`.

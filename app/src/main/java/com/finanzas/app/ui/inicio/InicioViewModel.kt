@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -51,12 +52,12 @@ class InicioViewModel @Inject constructor(
             cargando = false,
             flujoMes = flujo,
             saldosCuentas = saldos,
-            movimientosRecientes = movimientos.take(MAX_MOVIMIENTOS_RECIENTES).map {
+            movimientosRecientes = movimientos.map {
                 it.aUi(it.categoriaId?.let(categoriaPorId::get), colores)
             },
             movimientosPendientes = pendientes,
         )
-    }.stateIn(
+    }.distinctUntilChanged().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = InicioUiState(),
