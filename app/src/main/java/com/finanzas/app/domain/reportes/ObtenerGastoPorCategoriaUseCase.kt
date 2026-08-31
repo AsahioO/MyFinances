@@ -2,8 +2,8 @@ package com.finanzas.app.domain.reportes
 
 import com.finanzas.app.data.local.entity.CategoriaEntity
 import com.finanzas.app.data.repository.MovimientoRepository
-import com.finanzas.app.domain.common.RangoFechas
-import com.finanzas.app.domain.common.rangoMesActual
+import com.finanzas.app.domain.model.RangoFechas
+import com.finanzas.app.domain.model.rangoMesActual
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject

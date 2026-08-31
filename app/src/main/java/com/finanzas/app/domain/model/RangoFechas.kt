@@ -1,4 +1,4 @@
-package com.finanzas.app.domain.common
+package com.finanzas.app.domain.model
 
 import java.time.Instant
 import java.time.ZoneId

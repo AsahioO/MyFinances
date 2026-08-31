@@ -1,4 +1,4 @@
-package com.finanzas.app.ui.components
+package com.finanzas.app.ui.inicio.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

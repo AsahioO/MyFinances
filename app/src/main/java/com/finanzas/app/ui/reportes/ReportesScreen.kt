@@ -15,10 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.finanzas.app.domain.reportes.GastoCategoria
-import com.finanzas.app.ui.components.DonutChartGastos
 import com.finanzas.app.ui.components.FilaMovimiento
 import com.finanzas.app.ui.components.FondoPantalla
-import com.finanzas.app.ui.components.TarjetaTopMover
+import com.finanzas.app.ui.reportes.components.DonutChartGastos
+import com.finanzas.app.ui.reportes.components.TarjetaTopMover
 import com.finanzas.app.ui.theme.Dimens
 import com.finanzas.app.ui.theme.FinanzasTheme
 

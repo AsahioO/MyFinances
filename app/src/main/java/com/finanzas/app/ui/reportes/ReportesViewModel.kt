@@ -3,12 +3,12 @@ package com.finanzas.app.ui.reportes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.finanzas.app.data.repository.MovimientoRepository
-import com.finanzas.app.domain.common.rangoMesActual
+import com.finanzas.app.domain.model.rangoMesActual
 import com.finanzas.app.domain.reportes.GastoCategoria
 import com.finanzas.app.domain.reportes.ObtenerGastoPorCategoriaUseCase
 import com.finanzas.app.ui.common.MovimientoUi
 import com.finanzas.app.ui.common.aUi
-import com.finanzas.app.ui.components.SegmentoDonut
+import com.finanzas.app.ui.reportes.components.SegmentoDonut
 import com.finanzas.app.ui.theme.ColoresSemanticos
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted

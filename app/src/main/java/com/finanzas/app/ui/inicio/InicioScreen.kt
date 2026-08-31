@@ -22,7 +22,7 @@ import com.finanzas.app.domain.cuenta.SaldoCuenta
 import com.finanzas.app.ui.components.AccesoRapidoChip
 import com.finanzas.app.ui.components.FilaMovimiento
 import com.finanzas.app.ui.components.FondoPantalla
-import com.finanzas.app.ui.components.TarjetaCuenta
+import com.finanzas.app.ui.inicio.components.TarjetaCuenta
 import com.finanzas.app.ui.theme.Dimens
 import com.finanzas.app.ui.theme.FinanzasTheme
 import com.finanzas.app.ui.theme.TextoMontoConCentavos

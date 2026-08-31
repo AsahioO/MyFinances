@@ -9,7 +9,7 @@ import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
 import com.finanzas.app.data.repository.MovimientoRepository
-import com.finanzas.app.domain.common.RangoFechas
+import com.finanzas.app.domain.model.RangoFechas
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
