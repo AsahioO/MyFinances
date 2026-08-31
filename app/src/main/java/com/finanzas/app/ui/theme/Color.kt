@@ -5,11 +5,11 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // --- Tokens fijos de la paleta ---
-// La paleta es fija por diseno: no se deriva del wallpaper (nada de Material You).
+// La paleta es fija por diseño: no se deriva del wallpaper (nada de Material You).
 
 val Ink = Color(0xFF2B1F33)
-val SurfaceCrema = Color(0xFFFBF6EF)
-val SurfaceLavanda = Color(0xFFF1E6E9)
+val SurfaceCrema = Color(0xFFFFFEFB)
+val SurfaceLavanda = Color(0xFFF6EDE6)
 val Violeta = Color(0xFF7A5490)
 val Mostaza = Color(0xFFD9A441)
 val Menta = Color(0xFF6FA087)

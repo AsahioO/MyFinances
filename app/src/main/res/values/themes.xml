@@ -1,7 +1,7 @@
 <resources>
     <style name="Theme.AppFinanzas" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/surface</item>
-        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowBackground">@color/surface</item>

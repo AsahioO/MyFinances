@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -15,7 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.finanzas.app.ui.theme.SurfaceCrema
+import com.finanzas.app.ui.theme.SurfaceLavanda
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -47,6 +52,7 @@ private fun PantallaPrincipal() {
     val navController = rememberNavController()
 
     Scaffold(
+        containerColor = SurfaceLavanda,
         bottomBar = { BarraNavegacion(navController) },
     ) { padding ->
         FinanzasNavHost(
@@ -63,7 +69,11 @@ private fun BarraNavegacion(navController: NavHostController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destinoActual = backStackEntry?.destination
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = SurfaceCrema,
+        tonalElevation = 6.dp,
+        modifier = Modifier.border(width = 1.dp, color = Color(0xFFE6DDD3)),
+    ) {
         DestinoPrincipal.entries.forEach { destino ->
             // Se compara contra el grafo, no contra la pantalla, para que la
             // pestana siga marcada al entrar a una pantalla secundaria.

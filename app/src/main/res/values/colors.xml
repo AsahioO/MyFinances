@@ -4,5 +4,5 @@
   arranque (themes.xml); la paleta real de la app vive en Compose.
 -->
 <resources>
-    <color name="surface">#FFFBF6EF</color>
+    <color name="surface">#FFF0E6D8</color>
 </resources>

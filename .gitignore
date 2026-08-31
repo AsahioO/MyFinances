@@ -11,3 +11,4 @@ local.properties
 /.kotlin
 /graphify-out/
 /.claude/
+.opencode
