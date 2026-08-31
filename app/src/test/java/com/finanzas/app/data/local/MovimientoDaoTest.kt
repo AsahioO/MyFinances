@@ -170,6 +170,29 @@ class MovimientoDaoTest {
         assertEquals(5_000L, porCuenta[cuentaEfectivo]?.totalEgresosCentavos)
     }
 
+    @Test
+    fun `observarRecientes respeta el limite y ordena de mas reciente a mas antiguo`() = runTest {
+        dao.insertar(movimientoDePrueba(10_000L, TipoMovimiento.EGRESO).copy(fechaMovimiento = 100L))
+        dao.insertar(movimientoDePrueba(20_000L, TipoMovimiento.EGRESO).copy(fechaMovimiento = 300L))
+        dao.insertar(movimientoDePrueba(30_000L, TipoMovimiento.EGRESO).copy(fechaMovimiento = 200L))
+
+        val recientes = dao.observarRecientes(limit = 2).first()
+
+        assertEquals(listOf(20_000L, 30_000L), recientes.map { it.montoCentavos })
+    }
+
+    @Test
+    fun `observarEnRangoLimit filtra por rango, ordena y limita`() = runTest {
+        dao.insertar(movimientoDePrueba(10_000L, TipoMovimiento.EGRESO).copy(fechaMovimiento = 100L))
+        dao.insertar(movimientoDePrueba(20_000L, TipoMovimiento.EGRESO).copy(fechaMovimiento = 400L))
+        dao.insertar(movimientoDePrueba(30_000L, TipoMovimiento.EGRESO).copy(fechaMovimiento = 200L))
+        dao.insertar(movimientoDePrueba(40_000L, TipoMovimiento.EGRESO).copy(fechaMovimiento = 9_000L)) // fuera de rango
+
+        val enRango = dao.observarEnRangoLimit(desde = 0L, hasta = 1_000L, limit = 1).first()
+
+        assertEquals(listOf(20_000L), enRango.map { it.montoCentavos })
+    }
+
     private fun movimientoDePrueba(montoCentavos: Long, tipo: TipoMovimiento) = MovimientoEntity(
         montoCentavos = montoCentavos,
         tipo = tipo,

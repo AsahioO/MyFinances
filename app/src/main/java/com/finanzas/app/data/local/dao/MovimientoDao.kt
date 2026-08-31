@@ -70,6 +70,19 @@ interface MovimientoDao {
 
     @Query(
         """
+        SELECT * FROM movimiento
+        WHERE fechaMovimiento BETWEEN :desde AND :hasta
+        ORDER BY fechaMovimiento DESC, id DESC
+        LIMIT :limit
+        """,
+    )
+    fun observarEnRangoLimit(desde: Long, hasta: Long, limit: Int): Flow<List<MovimientoEntity>>
+
+    @Query("SELECT * FROM movimiento ORDER BY fechaMovimiento DESC, id DESC LIMIT :limit")
+    fun observarRecientes(limit: Int): Flow<List<MovimientoEntity>>
+
+    @Query(
+        """
         SELECT categoriaId, SUM(montoCentavos) AS totalCentavos
         FROM movimiento
         WHERE tipo = :tipo AND fechaMovimiento BETWEEN :desde AND :hasta
