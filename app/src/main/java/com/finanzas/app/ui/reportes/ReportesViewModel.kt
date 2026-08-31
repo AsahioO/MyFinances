@@ -3,6 +3,7 @@ package com.finanzas.app.ui.reportes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.data.repository.ReportesRepository
 import com.finanzas.app.domain.model.rangoMesActual
 import com.finanzas.app.domain.reportes.GastoCategoria
 import com.finanzas.app.domain.reportes.ObtenerGastoPorCategoriaUseCase
@@ -40,6 +41,7 @@ private fun colorParaIndice(indice: Int, colores: ColoresSemanticos) = listOf(
 @HiltViewModel
 class ReportesViewModel @Inject constructor(
     private val repositorio: MovimientoRepository,
+    private val reportes: ReportesRepository,
     obtenerGastoPorCategoria: ObtenerGastoPorCategoriaUseCase,
 ) : ViewModel() {
 
@@ -49,7 +51,7 @@ class ReportesViewModel @Inject constructor(
 
     val estado: StateFlow<ReportesUiState> = combine(
         obtenerGastoPorCategoria(rango),
-        repositorio.observarMovimientosEnRango(rango.desde, rango.hasta),
+        reportes.observarEnRangoLimit(rango.desde, rango.hasta, MAX_TRANSACCIONES_RECIENTES),
         repositorio.observarCategorias(),
     ) { gastos, movimientos, categorias ->
         val categoriaPorId = categorias.associateBy { it.id }

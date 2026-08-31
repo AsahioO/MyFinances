@@ -42,7 +42,7 @@ class InicioViewModel @Inject constructor(
     val estado: StateFlow<InicioUiState> = combine(
         obtenerFlujoDelMes(),
         obtenerSaldosCuentas(),
-        repositorio.observarMovimientos(),
+        repositorio.observarRecientes(MAX_MOVIMIENTOS_RECIENTES),
         repositorio.observarCategorias(),
         repositorio.observarPendientesDeRevision().map { it.size },
     ) { flujo, saldos, movimientos, categorias, pendientes ->

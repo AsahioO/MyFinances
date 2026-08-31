@@ -9,6 +9,7 @@ import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
 import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.data.repository.ReportesRepository
 import com.finanzas.app.domain.model.RangoFechas
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -23,7 +24,6 @@ import org.robolectric.RobolectricTestRunner
 class ObtenerGastoPorCategoriaUseCaseTest {
 
     private lateinit var db: AppDatabase
-    private lateinit var repositorio: MovimientoRepository
     private lateinit var useCase: ObtenerGastoPorCategoriaUseCase
 
     @Before
@@ -35,15 +35,17 @@ class ObtenerGastoPorCategoriaUseCaseTest {
             .addCallback(AppDatabase.SEED_CALLBACK)
             .allowMainThreadQueries()
             .build()
-        repositorio = MovimientoRepository(
+        val repositorio = MovimientoRepository(
             movimientoDao = db.movimientoDao(),
             categoriaDao = db.categoriaDao(),
             notificacionProcesadaDao = db.notificacionProcesadaDao(),
             bancoConfigDao = db.bancoConfigDao(),
-            cuentaDao = db.cuentaDao(),
             db = db,
         )
-        useCase = ObtenerGastoPorCategoriaUseCase(repositorio)
+        useCase = ObtenerGastoPorCategoriaUseCase(
+            ReportesRepository(db.movimientoDao()),
+            repositorio,
+        )
     }
 
     @After

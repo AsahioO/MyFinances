@@ -3,6 +3,7 @@ package com.finanzas.app.domain.notificacion
 import com.finanzas.app.data.local.entity.EstadoMovimiento
 import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.NotificacionProcesadaEntity
+import com.finanzas.app.data.repository.CuentaRepository
 import com.finanzas.app.data.repository.MovimientoRepository
 import javax.inject.Inject
 
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class ProcesarNotificacionUseCase @Inject constructor(
     private val parsers: List<@JvmSuppressWildcards ParserNotificacionBanco>,
     private val repositorio: MovimientoRepository,
+    private val cuentas: CuentaRepository,
 ) {
     suspend operator fun invoke(notificacion: NotificacionCruda) {
         if (notificacion.packageName !in repositorio.paquetesDeBancosActivos()) return
@@ -23,7 +25,7 @@ class ProcesarNotificacionUseCase @Inject constructor(
         if (resultado !is ResultadoParseoNotificacion.Exitoso) return
 
         val ahora = System.currentTimeMillis()
-        val cuenta = repositorio.obtenerCuentaPorOrigen(parser.origen)
+        val cuenta = cuentas.obtenerPorOrigen(parser.origen)
         val movimiento = MovimientoEntity(
             montoCentavos = resultado.datos.montoCentavos,
             tipo = resultado.datos.tipo,

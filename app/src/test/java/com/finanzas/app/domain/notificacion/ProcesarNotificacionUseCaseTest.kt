@@ -6,6 +6,7 @@ import com.finanzas.app.data.local.AppDatabase
 import com.finanzas.app.data.local.entity.EstadoMovimiento
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.notificacion.parser.NuNotificacionParser
+import com.finanzas.app.data.repository.CuentaRepository
 import com.finanzas.app.data.repository.MovimientoRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -43,10 +44,13 @@ class ProcesarNotificacionUseCaseTest {
             categoriaDao = db.categoriaDao(),
             notificacionProcesadaDao = db.notificacionProcesadaDao(),
             bancoConfigDao = db.bancoConfigDao(),
-            cuentaDao = db.cuentaDao(),
             db = db,
         )
-        useCase = ProcesarNotificacionUseCase(listOf(NuNotificacionParser()), repositorio)
+        useCase = ProcesarNotificacionUseCase(
+            listOf(NuNotificacionParser()),
+            repositorio,
+            CuentaRepository(db.cuentaDao()),
+        )
     }
 
     @After

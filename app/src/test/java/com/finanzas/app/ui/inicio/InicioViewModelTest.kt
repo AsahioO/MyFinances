@@ -7,7 +7,9 @@ import com.finanzas.app.data.local.entity.EstadoMovimiento
 import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
+import com.finanzas.app.data.repository.CuentaRepository
 import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.data.repository.ReportesRepository
 import com.finanzas.app.domain.cuenta.ObtenerSaldosCuentasUseCase
 import com.finanzas.app.domain.reportes.ObtenerFlujoDelMesUseCase
 import kotlinx.coroutines.Dispatchers
@@ -52,13 +54,14 @@ class InicioViewModelTest {
             categoriaDao = db.categoriaDao(),
             notificacionProcesadaDao = db.notificacionProcesadaDao(),
             bancoConfigDao = db.bancoConfigDao(),
-            cuentaDao = db.cuentaDao(),
             db = db,
         )
+        val cuentas = CuentaRepository(db.cuentaDao())
+        val reportes = ReportesRepository(db.movimientoDao())
         viewModel = InicioViewModel(
             repositorio = repositorio,
-            obtenerFlujoDelMes = ObtenerFlujoDelMesUseCase(repositorio),
-            obtenerSaldosCuentas = ObtenerSaldosCuentasUseCase(repositorio),
+            obtenerFlujoDelMes = ObtenerFlujoDelMesUseCase(reportes),
+            obtenerSaldosCuentas = ObtenerSaldosCuentasUseCase(cuentas, reportes),
         )
     }
 

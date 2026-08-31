@@ -1,7 +1,8 @@
 package com.finanzas.app.domain.cuenta
 
 import com.finanzas.app.data.local.entity.CuentaEntity
-import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.data.repository.CuentaRepository
+import com.finanzas.app.data.repository.ReportesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -17,12 +18,13 @@ data class SaldoCuenta(
  * movimiento se edita o se borra.
  */
 class ObtenerSaldosCuentasUseCase @Inject constructor(
-    private val repositorio: MovimientoRepository,
+    private val cuentas: CuentaRepository,
+    private val reportes: ReportesRepository,
 ) {
     operator fun invoke(): Flow<List<SaldoCuenta>> =
         combine(
-            repositorio.observarCuentasActivas(),
-            repositorio.observarMovimientoPorCuenta(),
+            cuentas.observarActivas(),
+            reportes.observarMovimientoPorCuenta(),
         ) { cuentas, movimientosPorCuenta ->
             val porCuentaId = movimientosPorCuenta.associateBy { it.cuentaId }
             cuentas.map { cuenta ->

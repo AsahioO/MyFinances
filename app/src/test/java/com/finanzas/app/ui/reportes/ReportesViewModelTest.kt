@@ -9,6 +9,7 @@ import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
 import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.data.repository.ReportesRepository
 import com.finanzas.app.domain.reportes.ObtenerGastoPorCategoriaUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,12 +48,13 @@ class ReportesViewModelTest {
             categoriaDao = db.categoriaDao(),
             notificacionProcesadaDao = db.notificacionProcesadaDao(),
             bancoConfigDao = db.bancoConfigDao(),
-            cuentaDao = db.cuentaDao(),
             db = db,
         )
+        val reportes = ReportesRepository(db.movimientoDao())
         viewModel = ReportesViewModel(
             repositorio = repositorio,
-            obtenerGastoPorCategoria = ObtenerGastoPorCategoriaUseCase(repositorio),
+            reportes = reportes,
+            obtenerGastoPorCategoria = ObtenerGastoPorCategoriaUseCase(reportes, repositorio),
         )
     }
 

@@ -4,25 +4,19 @@ import androidx.room.withTransaction
 import com.finanzas.app.data.local.AppDatabase
 import com.finanzas.app.data.local.dao.BancoConfigDao
 import com.finanzas.app.data.local.dao.CategoriaDao
-import com.finanzas.app.data.local.dao.CuentaDao
-import com.finanzas.app.data.local.dao.FlujoPeriodo
-import com.finanzas.app.data.local.dao.GastoPorCategoria
 import com.finanzas.app.data.local.dao.MovimientoDao
-import com.finanzas.app.data.local.dao.MovimientoPorCuenta
 import com.finanzas.app.data.local.dao.NotificacionProcesadaDao
 import com.finanzas.app.data.local.entity.BancoConfigEntity
 import com.finanzas.app.data.local.entity.CategoriaEntity
-import com.finanzas.app.data.local.entity.CuentaEntity
 import com.finanzas.app.data.local.entity.EstadoMovimiento
 import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.NotificacionProcesadaEntity
-import com.finanzas.app.data.local.entity.OrigenMovimiento
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Unico punto de entrada a los datos. Los ViewModels hablan solo con esta clase,
- * nunca con Room directo, para que agregar una pantalla no obligue a tocar las
- * demas ni a duplicar consultas.
+ * Acceso a movimientos, categorias, deduplicacion y bancos configurados. Los
+ * agregados para UI viven en `ReportesRepository` y las cuentas en
+ * `CuentaRepository`: las pantallas inyectan solo lo que usan.
  *
  * Se construye desde `di/RepositoryModule`, no con `@Inject constructor`, para
  * que exista una sola definicion del binding.
@@ -32,13 +26,13 @@ class MovimientoRepository(
     private val categoriaDao: CategoriaDao,
     private val notificacionProcesadaDao: NotificacionProcesadaDao,
     private val bancoConfigDao: BancoConfigDao,
-    private val cuentaDao: CuentaDao,
     private val db: AppDatabase,
 ) {
 
     // --- Movimientos ---
 
-    fun observarMovimientos(): Flow<List<MovimientoEntity>> = movimientoDao.observarTodos()
+    fun observarRecientes(limit: Int): Flow<List<MovimientoEntity>> =
+        movimientoDao.observarRecientes(limit)
 
     fun observarConteoMovimientos(): Flow<Int> = movimientoDao.observarConteo()
 
@@ -46,18 +40,6 @@ class MovimientoRepository(
 
     fun observarPendientesDeRevision(): Flow<List<MovimientoEntity>> =
         movimientoDao.observarPorEstado(EstadoMovimiento.PENDIENTE_REVISION)
-
-    fun observarMovimientosEnRango(desde: Long, hasta: Long): Flow<List<MovimientoEntity>> =
-        movimientoDao.observarEnRango(desde, hasta)
-
-    fun observarGastoPorCategoria(desde: Long, hasta: Long): Flow<List<GastoPorCategoria>> =
-        movimientoDao.observarGastoPorCategoria(desde, hasta)
-
-    fun observarFlujoEnRango(desde: Long, hasta: Long): Flow<FlujoPeriodo> =
-        movimientoDao.observarFlujoEnRango(desde, hasta)
-
-    fun observarMovimientoPorCuenta(): Flow<List<MovimientoPorCuenta>> =
-        movimientoDao.observarMovimientoPorCuenta()
 
     suspend fun obtenerMovimiento(id: Long): MovimientoEntity? = movimientoDao.obtenerPorId(id)
 
@@ -125,11 +107,4 @@ class MovimientoRepository(
 
     suspend fun cambiarActivoBanco(packageName: String, activo: Boolean) =
         bancoConfigDao.cambiarActivo(packageName, activo)
-
-    // --- Cuentas ---
-
-    fun observarCuentasActivas(): Flow<List<CuentaEntity>> = cuentaDao.observarActivas()
-
-    suspend fun obtenerCuentaPorOrigen(origen: OrigenMovimiento): CuentaEntity? =
-        cuentaDao.obtenerPorOrigen(origen)
 }

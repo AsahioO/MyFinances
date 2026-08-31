@@ -7,7 +7,7 @@ import com.finanzas.app.data.local.entity.EstadoMovimiento
 import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
-import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.data.repository.ReportesRepository
 import com.finanzas.app.domain.model.RangoFechas
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -22,7 +22,6 @@ import org.robolectric.RobolectricTestRunner
 class ObtenerFlujoDelMesUseCaseTest {
 
     private lateinit var db: AppDatabase
-    private lateinit var repositorio: MovimientoRepository
     private lateinit var useCase: ObtenerFlujoDelMesUseCase
 
     @Before
@@ -34,15 +33,7 @@ class ObtenerFlujoDelMesUseCaseTest {
             .addCallback(AppDatabase.SEED_CALLBACK)
             .allowMainThreadQueries()
             .build()
-        repositorio = MovimientoRepository(
-            movimientoDao = db.movimientoDao(),
-            categoriaDao = db.categoriaDao(),
-            notificacionProcesadaDao = db.notificacionProcesadaDao(),
-            bancoConfigDao = db.bancoConfigDao(),
-            cuentaDao = db.cuentaDao(),
-            db = db,
-        )
-        useCase = ObtenerFlujoDelMesUseCase(repositorio)
+        useCase = ObtenerFlujoDelMesUseCase(ReportesRepository(db.movimientoDao()))
     }
 
     @After

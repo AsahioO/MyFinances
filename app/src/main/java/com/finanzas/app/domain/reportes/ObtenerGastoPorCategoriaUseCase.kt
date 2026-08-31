@@ -2,6 +2,7 @@ package com.finanzas.app.domain.reportes
 
 import com.finanzas.app.data.local.entity.CategoriaEntity
 import com.finanzas.app.data.repository.MovimientoRepository
+import com.finanzas.app.data.repository.ReportesRepository
 import com.finanzas.app.domain.model.RangoFechas
 import com.finanzas.app.domain.model.rangoMesActual
 import kotlinx.coroutines.flow.Flow
@@ -22,12 +23,13 @@ data class GastoCategoria(
  * para el donut y las tarjetas de top movers.
  */
 class ObtenerGastoPorCategoriaUseCase @Inject constructor(
-    private val repositorio: MovimientoRepository,
+    private val reportes: ReportesRepository,
+    private val movimientos: MovimientoRepository,
 ) {
     operator fun invoke(rango: RangoFechas = rangoMesActual()): Flow<List<GastoCategoria>> =
         combine(
-            repositorio.observarGastoPorCategoria(rango.desde, rango.hasta),
-            repositorio.observarCategorias(),
+            reportes.observarGastoPorCategoria(rango.desde, rango.hasta),
+            movimientos.observarCategorias(),
         ) { gastos, categorias ->
             val total = gastos.sumOf { it.totalCentavos }.coerceAtLeast(1L)
             val categoriaPorId = categorias.associateBy { it.id }
