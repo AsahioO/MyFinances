@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.finanzas.app.ui.agregar.AgregarMovimientoScreen
 import com.finanzas.app.ui.ajustes.AjustesScreen
 import com.finanzas.app.ui.inicio.InicioScreen
 import com.finanzas.app.ui.movimientos.MovimientosScreen
@@ -45,5 +46,21 @@ fun NavGraphBuilder.grafoReportes() {
 fun NavGraphBuilder.grafoAjustes() {
     navigation<GrafoAjustes>(startDestination = RutaAjustes) {
         composable<RutaAjustes> { AjustesScreen() }
+    }
+}
+
+/**
+ * Pantallas de accion, alcanzables desde mas de una seccion (ver comentario
+ * en Rutas.kt). Sin tab propio: MainActivity oculta el bottom nav mientras el
+ * back stack esta dentro de este grafo.
+ */
+fun NavGraphBuilder.grafoAcciones(navController: NavHostController) {
+    navigation<GrafoAcciones>(startDestination = RutaAgregarManual()) {
+        composable<RutaAgregarManual> {
+            AgregarMovimientoScreen(
+                onGuardado = { navController.popBackStack() },
+                onCancelar = { navController.popBackStack() },
+            )
+        }
     }
 }

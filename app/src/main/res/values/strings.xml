@@ -4,4 +4,6 @@
     <string name="nav_movimientos">Movimientos</string>
     <string name="nav_reportes">Reportes</string>
     <string name="nav_ajustes">Ajustes</string>
+    <string name="shortcut_agregar_corto">Agregar gasto</string>
+    <string name="shortcut_agregar_largo">Registrar un gasto en efectivo</string>
 </resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="agregar"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_add"
+        android:shortcutShortLabel="@string/shortcut_agregar_corto"
+        android:shortcutLongLabel="@string/shortcut_agregar_largo">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.finanzas.app"
+            android:targetClass="com.finanzas.app.MainActivity">
+            <extra
+                android:name="destino"
+                android:value="agregar" />
+        </intent>
+    </shortcut>
+</shortcuts>

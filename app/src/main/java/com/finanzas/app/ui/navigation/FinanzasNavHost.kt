@@ -22,5 +22,6 @@ fun FinanzasNavHost(
         grafoMovimientos(navController)
         grafoReportes()
         grafoAjustes()
+        grafoAcciones(navController)
     }
 }
