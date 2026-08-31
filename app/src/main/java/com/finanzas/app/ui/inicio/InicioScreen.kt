@@ -29,6 +29,8 @@ import com.finanzas.app.ui.theme.TextoMontoConCentavos
 
 @Composable
 fun InicioScreen(
+    onAgregar: () -> Unit,
+    onFilaClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InicioViewModel = hiltViewModel(),
 ) {
@@ -53,7 +55,12 @@ fun InicioScreen(
                 )
             }
 
-            item { AccesosRapidos(movimientosPendientes = estado.movimientosPendientes) }
+            item {
+                AccesosRapidos(
+                    movimientosPendientes = estado.movimientosPendientes,
+                    onAgregar = onAgregar,
+                )
+            }
 
             if (estado.saldosCuentas.isNotEmpty()) {
                 item {
@@ -80,21 +87,25 @@ fun InicioScreen(
             }
 
             items(estado.movimientosRecientes, key = { it.id }) { movimiento ->
-                FilaMovimiento(movimiento = movimiento)
+                FilaMovimiento(movimiento = movimiento, onClick = { onFilaClick(movimiento.id) })
             }
         }
     }
 }
 
 @Composable
-private fun AccesosRapidos(movimientosPendientes: Int, modifier: Modifier = Modifier) {
+private fun AccesosRapidos(
+    movimientosPendientes: Int,
+    onAgregar: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        // Sin accion real todavia: alta manual, revision de pendientes y
-        // gestion de categorias quedan fuera del alcance de esta iteracion.
-        AccesoRapidoChip(icono = Icons.Filled.Add, etiqueta = "Agregar", onClick = {})
+        // Revision de pendientes y gestion de categorias quedan fuera del
+        // alcance de esta iteracion; agregar ya navega al formulario manual.
+        AccesoRapidoChip(icono = Icons.Filled.Add, etiqueta = "Agregar", onClick = onAgregar)
         AccesoRapidoChip(
             icono = Icons.Filled.PendingActions,
             etiqueta = "Pendientes",

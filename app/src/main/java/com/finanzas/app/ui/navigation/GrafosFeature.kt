@@ -1,6 +1,7 @@
 package com.finanzas.app.ui.navigation
 
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.finanzas.app.ui.ajustes.AjustesScreen
@@ -14,15 +15,24 @@ import com.finanzas.app.ui.reportes.ReportesScreen
  * dentro del grafo que les corresponde, sin tocar los otros.
  */
 
-fun NavGraphBuilder.grafoInicio() {
+fun NavGraphBuilder.grafoInicio(navController: NavHostController) {
     navigation<GrafoInicio>(startDestination = RutaInicio) {
-        composable<RutaInicio> { InicioScreen() }
+        composable<RutaInicio> {
+            InicioScreen(
+                onAgregar = { navController.navigate(RutaAgregarManual()) },
+                onFilaClick = { id -> navController.navigate(RutaDetalleMovimiento(id)) },
+            )
+        }
     }
 }
 
-fun NavGraphBuilder.grafoMovimientos() {
+fun NavGraphBuilder.grafoMovimientos(navController: NavHostController) {
     navigation<GrafoMovimientos>(startDestination = RutaMovimientos) {
-        composable<RutaMovimientos> { MovimientosScreen() }
+        composable<RutaMovimientos> {
+            MovimientosScreen(
+                onFilaClick = { id -> navController.navigate(RutaDetalleMovimiento(id)) },
+            )
+        }
     }
 }
 

@@ -18,8 +18,8 @@ fun FinanzasNavHost(
         startDestination = GrafoInicio,
         modifier = modifier,
     ) {
-        grafoInicio()
-        grafoMovimientos()
+        grafoInicio(navController)
+        grafoMovimientos(navController)
         grafoReportes()
         grafoAjustes()
     }
