@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 private const val MAX_MOVIMIENTOS_RECIENTES = 5
 
+@androidx.compose.runtime.Immutable
 data class InicioUiState(
     val cargando: Boolean = true,
     val flujoMes: FlujoMes = FlujoMes(),
