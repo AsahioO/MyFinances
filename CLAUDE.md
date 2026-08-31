@@ -53,3 +53,13 @@ Typed routes only — no string routes anywhere (`ui/navigation/Rutas.kt` uses `
 ### Theming
 
 `ui/theme/Theme.kt` builds a fixed `ColorScheme` by hand from fixed tokens — no `dynamicColor`/Material You, ever. Color carries semantic meaning (violet = bank-detected/automatic, mustard = manual/cash entry), so deriving it from the wallpaper would break that meaning. Access custom tokens via `FinanzasTheme.colores` / `FinanzasTheme.monto` (amount-specific text styles have no Material 3 equivalent), not `MaterialTheme` directly, when they exist.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

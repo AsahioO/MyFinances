@@ -7,6 +7,7 @@ import androidx.navigation.compose.navigation
 import com.finanzas.app.ui.agregar.AgregarMovimientoScreen
 import com.finanzas.app.ui.ajustes.AjustesScreen
 import com.finanzas.app.ui.inicio.InicioScreen
+import com.finanzas.app.ui.movimientos.DetalleMovimientoScreen
 import com.finanzas.app.ui.movimientos.MovimientosScreen
 import com.finanzas.app.ui.reportes.ReportesScreen
 
@@ -60,6 +61,11 @@ fun NavGraphBuilder.grafoAcciones(navController: NavHostController) {
             AgregarMovimientoScreen(
                 onGuardado = { navController.popBackStack() },
                 onCancelar = { navController.popBackStack() },
+            )
+        }
+        composable<RutaDetalleMovimiento> {
+            DetalleMovimientoScreen(
+                onCerrar = { navController.popBackStack() },
             )
         }
     }
