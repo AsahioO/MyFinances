@@ -9,6 +9,7 @@ import com.finanzas.app.data.local.dao.CuentaDao
 import com.finanzas.app.data.local.dao.MovimientoDao
 import com.finanzas.app.data.local.dao.NotificacionProcesadaDao
 import com.finanzas.app.data.local.migration.MIGRATION_1_2
+import com.finanzas.app.data.local.migration.MIGRATION_2_3
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +32,7 @@ object DatabaseModule {
             .addCallback(AppDatabase.SEED_CALLBACK)
             // Sin fallbackToDestructiveMigration: la app acumula historial
             // financiero real, cada cambio de esquema lleva migracion escrita.
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides

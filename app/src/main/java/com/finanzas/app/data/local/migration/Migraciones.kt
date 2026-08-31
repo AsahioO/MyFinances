@@ -84,3 +84,37 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         // todavia (se crea cuando el usuario active ese banco desde Ajustes).
     }
 }
+
+/**
+ * Sin cambios de esquema: la tabla `categoria` ya existe desde v1. Esta
+ * migracion solo siembra un set fijo de categorias para instalaciones
+ * existentes, para que el formulario de alta manual y los reportes por
+ * categoria no arranquen vacios. Duplica a proposito el mismo INSERT de
+ * [AppDatabase.SEED_CALLBACK] (mismo patron que MIGRATION_1_2 con `cuenta`):
+ * instalaciones nuevas siembran por el callback, instalaciones existentes
+ * por esta migracion.
+ */
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        CATEGORIAS_SEMILLA.forEach { (nombre, icono, color) ->
+            db.execSQL(
+                "INSERT INTO categoria (nombre, icono, color) VALUES (?, ?, ?)",
+                arrayOf(nombre, icono, color),
+            )
+        }
+    }
+}
+
+/** Set fijo de categorias MX. Nombre del icono = ImageVector de Material. */
+val CATEGORIAS_SEMILLA: List<Triple<String, String, String>> = listOf(
+    Triple("Comida", "Restaurant", "#E07856"),
+    Triple("Transporte", "DirectionsCar", "#5B8DEF"),
+    Triple("Servicios", "Bolt", "#F2B134"),
+    Triple("Renta", "Home", "#7A5490"),
+    Triple("Salud", "LocalHospital", "#D9556B"),
+    Triple("Ocio", "SportsEsports", "#6FA087"),
+    Triple("Compras", "ShoppingBag", "#D9A441"),
+    Triple("Educacion", "School", "#4A90A4"),
+    Triple("Suscripciones", "Subscriptions", "#9B6FAE"),
+    Triple("Otros", "Category", "#8A7D91"),
+)

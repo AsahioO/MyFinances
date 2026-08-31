@@ -14,6 +14,7 @@ import com.finanzas.app.data.local.entity.CategoriaEntity
 import com.finanzas.app.data.local.entity.CuentaEntity
 import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.NotificacionProcesadaEntity
+import com.finanzas.app.data.local.migration.CATEGORIAS_SEMILLA
 
 @Database(
     entities = [
@@ -40,7 +41,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun cuentaDao(): CuentaDao
 
     companion object {
-        const val VERSION = 2
+        const val VERSION = 3
         const val NOMBRE_ARCHIVO = "finanzas.db"
 
         /**
@@ -73,6 +74,15 @@ abstract class AppDatabase : RoomDatabase() {
                     "INSERT INTO cuenta (nombre, origen, saldoInicialCentavos, icono, archivada, orden) " +
                         "VALUES ('Nu', 'NU', 0, 'AccountBalanceWallet', 0, 1)",
                 )
+                // Mismo set que MIGRATION_2_3 siembra para instalaciones existentes:
+                // sin categorias el formulario de alta manual y los reportes por
+                // categoria arrancarian vacios.
+                CATEGORIAS_SEMILLA.forEach { (nombre, icono, color) ->
+                    db.execSQL(
+                        "INSERT INTO categoria (nombre, icono, color) VALUES (?, ?, ?)",
+                        arrayOf(nombre, icono, color),
+                    )
+                }
             }
         }
     }
