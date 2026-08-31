@@ -35,6 +35,10 @@ data object GrafoReportes
 @Serializable
 data object RutaReportes
 
+/** "Ver todas" de Top Movers: todas las categorias del mes con su gasto, sin el take(4) de Reportes. */
+@Serializable
+data object RutaCategorias
+
 // --- Ajustes ---
 
 @Serializable

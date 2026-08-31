@@ -9,6 +9,7 @@ import com.finanzas.app.domain.reportes.GastoCategoria
 import com.finanzas.app.domain.reportes.ObtenerGastoPorCategoriaUseCase
 import com.finanzas.app.ui.common.MovimientoUi
 import com.finanzas.app.ui.common.aUi
+import com.finanzas.app.ui.common.colorCategoria
 import com.finanzas.app.ui.reportes.components.SegmentoDonut
 import com.finanzas.app.ui.theme.ColoresSemanticos
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +56,7 @@ class ReportesViewModel @Inject constructor(
             totalGastadoCentavos = gastos.sumOf { it.montoCentavos },
             segmentosDonut = gastos.map { gasto ->
                 SegmentoDonut(
-                    color = ReportesPaleta.colorPara(gasto.categoria?.id),
+                    color = colorCategoria(gasto.categoria?.color, colores.textoSecundario),
                     proporcion = gasto.proporcion,
                     etiqueta = gasto.categoria?.nombre ?: "Sin categoria",
                 )
