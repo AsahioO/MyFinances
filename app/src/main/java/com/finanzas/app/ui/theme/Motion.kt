@@ -26,4 +26,19 @@ object Motion {
 
     const val RecesoEscala = 0.94f
     const val RecesoAlpha = 0.4f
+
+    /** Medio ciclo del pulso del esqueleto de carga (va en RepeatMode.Reverse). */
+    const val PulsoEsqueletoMillis = 900
+
+    /** Relleno de la barra de proporcion del hero: lento, es un dato, no un gesto. */
+    const val BarraProporcionMillis = 600
 }
+
+/*
+ * Nota: MaterialTheme.motionScheme (el sistema de motion de M3 Expressive)
+ * seria el lugar natural para los timings de componente, pero en material3
+ * 1.4.0 —la version que resuelve el BOM de este proyecto— tanto MotionScheme
+ * como ExperimentalMaterial3ExpressiveApi son internal. Hasta que entre
+ * material3-expressive como dependencia, todos los timings salen de aca.
+ */
+
