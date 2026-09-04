@@ -97,10 +97,11 @@ fun Modifier.compartirLimite(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// "agregar-bounds": morfosis de forma (circulo -> tarjeta)
+// "agregar-bounds": morfosis de forma (FAB circular -> tarjeta)
 // ─────────────────────────────────────────────────────────────────────────────
 
-private const val OrigenLadoDp = 48f // debe coincidir con el IconButton de 48dp de AccesoRapidoChip
+/** Lado del FAB de Inicio (FloatingActionButton circular 56dp). Debe coincidir con el FAB. */
+private const val OrigenLadoDp = 56f
 private const val CrecimientoMorfosisDp = 96f // ventana de crecimiento (lado menor) hasta comprometerse al radio final
 
 /**
@@ -124,7 +125,7 @@ private fun rutaMorfosisCirculoATarjeta(bounds: Rect, density: Density): Path {
     }
 }
 
-/** Clip compartido por los tres participantes de "agregar-bounds" (chip, boton vacio, CardHeroMonto). */
+/** Clip compartido por los participantes de "agregar-bounds" (FAB de Inicio, CardHeroMonto). */
 val ClipAgregarBounds: OverlayClip = object : OverlayClip {
     override fun getClipPath(
         sharedContentState: SharedContentState,
