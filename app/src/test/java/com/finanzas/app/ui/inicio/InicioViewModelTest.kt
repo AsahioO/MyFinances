@@ -7,6 +7,7 @@ import com.finanzas.app.data.local.entity.EstadoMovimiento
 import com.finanzas.app.data.local.entity.MovimientoEntity
 import com.finanzas.app.data.local.entity.OrigenMovimiento
 import com.finanzas.app.data.local.entity.TipoMovimiento
+import com.finanzas.app.data.notificacion.EstadoPermisoNotificaciones
 import com.finanzas.app.data.repository.CuentaRepository
 import com.finanzas.app.data.repository.MovimientoRepository
 import com.finanzas.app.data.repository.ReportesRepository
@@ -62,6 +63,9 @@ class InicioViewModelTest {
             repositorio = repositorio,
             obtenerFlujoDelMes = ObtenerFlujoDelMesUseCase(reportes),
             obtenerSaldosCuentas = ObtenerSaldosCuentasUseCase(cuentas, reportes),
+            permisoNotificaciones = EstadoPermisoNotificaciones(
+                ApplicationProvider.getApplicationContext(),
+            ),
         )
     }
 
